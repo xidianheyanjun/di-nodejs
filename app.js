@@ -4,7 +4,7 @@ require("babel-register")({
 });
 require("babel-polyfill");
 let http = require("http");
-let FileUtils = require("./lib/FileUtils");
+let FileUtils = require("./di/utils/FileUtils");
 let envPath = "./env.json";// 配置文件地址
 FileUtils.loadFileData(envPath).then(function (env) {
     let express = require('express');
@@ -21,12 +21,8 @@ FileUtils.loadFileData(envPath).then(function (env) {
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(cookieParser());
     app.use(express.static(path.join(__dirname, 'public')));
-    let Context = require("./di/Context");
-    let context = new Context(env);
-    app.all("*", (req, res)=> {
-        console.log(123);
-        res.send("111112");
-    });
+    let Context = require("./di/web/Context");
+    let context = new Context(app, env);
     http.createServer(app).listen(env["port"], function () {
         console.log("Express server listening on port " + env["port"]);
     });
